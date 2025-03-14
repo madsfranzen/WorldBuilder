@@ -3,40 +3,80 @@ package com.worldbuilder.debug;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
 public class DebugInfo extends VBox {
+    private static AnchorPane container;
     private static final Label debugLabel;
+    private static final Label lastAction;
+    private static final Label errorLabel;
     private static final Map<String, String> categories = new LinkedHashMap<>();
     private static String separator = "\n";
     private static boolean enabled = true;
 
     static {
         debugLabel = new Label("READY");
+        lastAction = new Label("");
+        errorLabel = new Label("");
         setupStyle();
     }
 
     private static void setupStyle() {
         // Debug label setup
         debugLabel.setStyle(
-            "-fx-background-color: transparent; " +
-            "-fx-text-fill: blue; " +
-            "-fx-padding: 10px 20px 20px 20px; " +
-            "-fx-font-family: monospace;"
-        );
+                "-fx-background-color: transparent; " +
+                        "-fx-text-fill: blue; " +
+                        "-fx-padding: 10px 20px 20px 20px; " +
+                        "-fx-font-family: monospace;");
         debugLabel.setAlignment(Pos.TOP_RIGHT);
         debugLabel.setEffect(new DropShadow());
         debugLabel.setTextAlignment(TextAlignment.RIGHT);
 
-        // Container setup
-        VBox container = new VBox(debugLabel);
-        container.setAlignment(Pos.TOP_RIGHT);
-        container.setPadding(new Insets(20));
+        lastAction.setStyle(
+                "-fx-background-color: transparent; " +
+                        "-fx-text-fill: blue; " +
+                        "-fx-padding: 10px 20px 20px 20px; " +
+                        "-fx-font-family: monospace;");
+        lastAction.setAlignment(Pos.BOTTOM_RIGHT);
+        lastAction.setEffect(new DropShadow());
+        lastAction.setTextAlignment(TextAlignment.RIGHT);
+
+        // Error label setup
+        errorLabel.setStyle(
+                "-fx-background-color: transparent; " +
+                        "-fx-text-fill: red; " +
+                        "-fx-padding: 10px 20px 20px 20px; " +
+                        "-fx-font-family: monospace;");
+        errorLabel.setAlignment(Pos.BOTTOM_RIGHT);
+        errorLabel.setEffect(new DropShadow());
+        errorLabel.setTextAlignment(TextAlignment.RIGHT);
+
+        // Create AnchorPane container instead of VBox
+        container = new AnchorPane();
+        
+        // Add all labels to the AnchorPane
+        container.getChildren().addAll(debugLabel, lastAction, errorLabel);
+        
+        // Position debugLabel at the top-right
+        AnchorPane.setTopAnchor(debugLabel, 20.0);
+        AnchorPane.setRightAnchor(debugLabel, 20.0);
+        
+        // Position lastAction at the bottom-right
+        AnchorPane.setBottomAnchor(lastAction, 60.0);  // Moved up to make room for error label
+        AnchorPane.setRightAnchor(lastAction, 20.0);
+        
+        // Position errorLabel at the bottom-right, below lastAction
+        AnchorPane.setBottomAnchor(errorLabel, 20.0);
+        AnchorPane.setRightAnchor(errorLabel, 20.0);
+        
+        container.setPadding(new Insets(0));
         container.setPickOnBounds(false);
     }
 
@@ -66,17 +106,26 @@ public class DebugInfo extends VBox {
     }
 
     public static void setCategory(String category, String value) {
-        if (!enabled) return;
+        if (!enabled)
+            return;
         categories.put(category, category + ": " + value);
+        updateDisplay();
+    }
+
+    public static void updateSelectedLayer(String message) {
+        if (!enabled)
+            return;
+        categories.put("LOG", message);
         updateDisplay();
     }
 
     private static void updateDisplay() {
         if (!enabled) {
-            debugLabel.setText("");
+            Platform.runLater(() -> debugLabel.setText(""));
             return;
         }
-        debugLabel.setText(String.join(separator, categories.values()));
+        final String text = String.join(separator, categories.values());
+        Platform.runLater(() -> debugLabel.setText(text));
     }
 
     public static void setSeparator(String newSeparator) {
@@ -86,18 +135,68 @@ public class DebugInfo extends VBox {
 
     public static void setEnabled(boolean isEnabled) {
         enabled = isEnabled;
-        debugLabel.setVisible(enabled);
-        if (!enabled) {
-            debugLabel.setText("");
+        Platform.runLater(() -> {
+            debugLabel.setVisible(enabled);
+            lastAction.setVisible(enabled);
+            errorLabel.setVisible(enabled);
+            if (!enabled) {
+                debugLabel.setText("");
+                lastAction.setText("");
+                errorLabel.setText("");
+            }
+        });
+    }
+
+    public static AnchorPane getBox() {
+        return container;
+    }
+
+    public static void setLastAction(String action) {
+        if (!enabled)
+            return;
+        Platform.runLater(() -> {
+            lastAction.setText(action);
+            clearError();
+        try {
+            new Thread(() -> {
+                try {
+                    Thread.sleep(5000);
+                    Platform.runLater(() -> lastAction.setText(""));
+                } catch (InterruptedException e) {
+                    // Ignore interruption
+                }
+            }).start();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        });
+    }
+
+    public static void setError(String error) {
+        if (!enabled)
+            return;
+        Platform.runLater(() -> errorLabel.setText(error));
+        // Schedule error to be cleared after 3 seconds
+        try {
+            new Thread(() -> {
+                try {
+                    Thread.sleep(2000);
+                    Platform.runLater(() -> clearError());
+                } catch (InterruptedException e) {
+                    // Ignore interruption
+                }
+            }).start();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
-    public static Label getDebugLabel() {
-        return debugLabel;
+    public static void clearError() {
+        Platform.runLater(() -> errorLabel.setText(""));
     }
 
     public static void clearCategories() {
         categories.clear();
         updateDisplay();
     }
-} 
+}

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.worldbuilder.TileType;
+import com.worldbuilder.debug.DebugInfo;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -54,6 +55,7 @@ public class SidePanel extends VBox {
                     button.getStyleClass().add("side-panel-button");
                     button.setOnAction(_ -> {
                         selectedLayer = config.type();
+                        DebugInfo.updateSelectedLayer("SELECTED LAYER: " + selectedLayer);
                         // Update all button states in one go
                         getChildren().stream()
                             .filter(node -> node instanceof Button)

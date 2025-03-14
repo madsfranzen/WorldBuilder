@@ -3,10 +3,11 @@ package com.worldbuilder.Canvas;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-
+import com.worldbuilder.debug.DebugInfo;
 public class SandCanvas extends Canvas {
     private final Image sandTile = new Image(getClass().getResourceAsStream("/assets/Terrain/Ground/Tilemap_Flat.png"));
     private static final int TILE_SIZE = 64;
+    private final GraphicsContext gc = getGraphicsContext2D();
 
     public SandCanvas(int width, int height) {
         super(width, height);
@@ -46,9 +47,7 @@ public class SandCanvas extends Canvas {
             SOLO = new TileVariant("SOLO", 8, 3);
     }
 
-    public void drawSand(int x, int y) {
-        GraphicsContext gc = getGraphicsContext2D();
-
+    public void paintSand(int x, int y) {
         TileVariant variant = determineVariant(x, y);
 
         gc.drawImage(sandTile, 
@@ -57,6 +56,12 @@ public class SandCanvas extends Canvas {
             x * 64, y * 64,                      // Destination coordinates
             64, 64                               // Destination dimensions
         );
+        DebugInfo.setLastAction("Painted SAND at (" + x + ", " + y + ")");
+    }
+
+    public void deleteSand(int x, int y) {
+        gc.clearRect(x * 64, y * 64, 64, 64);
+        DebugInfo.setLastAction("Deleted SAND at (" + x + ", " + y + ")");
     }
 
     private TileVariant determineVariant(int x, int y) {

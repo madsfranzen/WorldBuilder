@@ -16,6 +16,7 @@ val javaFXVersion = "21.0.2"
 
 dependencies {
     implementation("com.google.guava:guava:32.0.1-jre")
+    implementation("org.json:json:20250107")
     
     // JavaFX dependencies with explicit versions
     implementation("org.openjfx:javafx-controls:$javaFXVersion")

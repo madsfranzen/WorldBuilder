@@ -16,13 +16,14 @@ import javafx.scene.paint.Color;
  */
 public final class WorldCanvas extends ScrollPane {
 
-    //================== CONSTANTS & FIELDS ==================//
-    
+    // ================== CONSTANTS & FIELDS ==================//
+
     private final int TILE_SIZE = 64;
     private final int WORLD_WIDTH;
     private final int WORLD_HEIGHT;
 
     private final Canvas gridCanvas;
+    private final Canvas hoverCanvas;
     private final Pane canvasContainer;
 
     private final GrassCanvas grassCanvas;
@@ -30,11 +31,14 @@ public final class WorldCanvas extends ScrollPane {
     private final SandCanvas sandCanvas;
     private final FoamCanvas foamCanvas;
     private final ShadowCanvas shadowCanvas;
+
     // Current tile position (mouse)
     private int currentTileX;
     private int currentTileY;
+    private int previousTileX;
+    private int previousTileY;
 
-    //================== CONSTRUCTOR ==================//
+    // ================== CONSTRUCTOR ==================//
 
     public WorldCanvas(int WORLD_WIDTH, int WORLD_HEIGHT) {
         super();
@@ -78,14 +82,19 @@ public final class WorldCanvas extends ScrollPane {
         canvasContainer.getChildren().add(shadowCanvas);
         shadowCanvas.setMouseTransparent(true);
 
+        // Initialize hover canvas
+        hoverCanvas = new Canvas(width, height);
+        canvasContainer.getChildren().add(hoverCanvas);
+        hoverCanvas.setMouseTransparent(true);
+
         // Configure ScrollPane
         setupScrollPane(width, height);
-        
+
         // Draw initial grid
         drawGrid();
     }
 
-    //================== SCROLL PANE SETUP ==================//
+    // ================== SCROLL PANE SETUP ==================//
 
     private void setupScrollPane(int width, int height) {
         setContent(canvasContainer);
@@ -104,40 +113,99 @@ public final class WorldCanvas extends ScrollPane {
         });
     }
 
-    //================== MOUSE HANDLERS ==================//
+    // ================== MOUSE HANDLERS ==================//
 
     private void setupMouseHandlers() {
         gridCanvas.setOnMouseMoved(this::updateTilePosition);
         gridCanvas.setOnMousePressed(event -> {
             updateTilePosition(event);
-            paintTile();
+
+            // IF RIGHT CLICK
+            if (event.isSecondaryButtonDown()) {
+                deleteTile();
+            } else {
+                paintTile();
+            }
+
         });
+
         gridCanvas.setOnMouseDragged(event -> {
             updateTilePosition(event);
-            paintTile();
+
+            // IF RIGHT CLICK
+            if (event.isSecondaryButtonDown()) {
+                deleteTile();
+            } else {
+                paintTile();
+            }
         });
     }
 
     private void updateTilePosition(MouseEvent event) {
-        // Get tile coordinates directly from mouse position
-        currentTileX = Math.min(Math.max(0, (int)(event.getX() / TILE_SIZE)), WORLD_WIDTH - 1);
-        currentTileY = Math.min(Math.max(0, (int)(event.getY() / TILE_SIZE)), WORLD_HEIGHT - 1);
-        
-        DebugInfo.updateCoordinates("Tile", currentTileX, currentTileY);
+
+        // removee hover effect from previous tile
+        previousTileX = currentTileX;
+        previousTileY = currentTileY;
+        hoverCanvas.getGraphicsContext2D().clearRect(previousTileX * TILE_SIZE, previousTileY * TILE_SIZE, TILE_SIZE,
+                TILE_SIZE);
+
+        // Update tile coordinates directly from mouse position
+        currentTileX = Math.min(Math.max(0, (int) (event.getX() / TILE_SIZE)), WORLD_WIDTH - 1);
+        currentTileY = Math.min(Math.max(0, (int) (event.getY() / TILE_SIZE)), WORLD_HEIGHT - 1);
+
+        // add hover effect to current tile
+        hoverCanvas.getGraphicsContext2D().setFill(new Color(1, 1, 0, 0.1)); // Yellow with 10% opacity
+        hoverCanvas.getGraphicsContext2D().fillRect(currentTileX * TILE_SIZE, currentTileY * TILE_SIZE, TILE_SIZE,
+                TILE_SIZE);
+
+        DebugInfo.updateCoordinates("TILE", currentTileX, currentTileY);
     }
 
-    //================== DRAWING METHODS ==================//
+    // ================== DRAWING METHODS ==================//
 
     private void paintTile() {
         switch (App.getSidePanel().getSelectedLayer()) {
-            case WATER -> waterCanvas.drawWater(currentTileX, currentTileY);
-            case FOAM -> foamCanvas.addFoamAt(currentTileX, currentTileY);
-            case SAND -> sandCanvas.drawSand(currentTileX, currentTileY);
-            case GRASS -> grassCanvas.drawGrass(currentTileX, currentTileY);
-            case SHADOW -> shadowCanvas.drawShadow(currentTileX, currentTileY);
-            case null -> System.out.println("No tile selected");
-            default -> System.out.println("No tile selected");
+            case WATER -> {
+                waterCanvas.drawWater(currentTileX, currentTileY);
+            }
+            case FOAM -> {
+                foamCanvas.paintFoam(currentTileX, currentTileY);
+            }
+            case SAND -> {
+                sandCanvas.paintSand(currentTileX, currentTileY);
+            }
+            case GRASS -> {
+                grassCanvas.drawGrass(currentTileX, currentTileY);
+            }
+            case SHADOW -> {
+                shadowCanvas.drawShadow(currentTileX, currentTileY);
+            }
+            case null -> DebugInfo.setError("NO LAYER SELECTED");
+            default -> DebugInfo.setError("NO LAYER SELECTED");
         }
+    }
+
+    private void deleteTile() {
+        switch (App.getSidePanel().getSelectedLayer()) {
+            case WATER -> {
+                waterCanvas.deleteWater(currentTileX, currentTileY);
+            }
+            case FOAM -> {
+                foamCanvas.deleteFoam(currentTileX, currentTileY);
+            }
+            case SAND -> {
+                sandCanvas.deleteSand(currentTileX, currentTileY);
+            }
+            case GRASS -> {
+                grassCanvas.deleteGrass(currentTileX, currentTileY);
+            }
+            case SHADOW -> {
+                shadowCanvas.deleteShadow(currentTileX, currentTileY);
+            }
+            case null -> DebugInfo.setError("NO LAYER SELECTED");
+            default -> DebugInfo.setError("NO LAYER SELECTED");
+        }
+
     }
 
     public void drawGrid() {
@@ -156,8 +224,13 @@ public final class WorldCanvas extends ScrollPane {
         }
     }
 
-    //================== GETTERS ==================//
+    // ================== GETTERS ==================//
 
-    public int getCurrentTileX() { return currentTileX; }
-    public int getCurrentTileY() { return currentTileY; }
+    public int getCurrentTileX() {
+        return currentTileX;
+    }
+
+    public int getCurrentTileY() {
+        return currentTileY;
+    }
 }

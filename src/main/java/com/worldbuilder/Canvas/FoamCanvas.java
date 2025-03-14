@@ -9,7 +9,7 @@ import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-
+import com.worldbuilder.debug.DebugInfo;
 /**
  * A specialized Canvas for rendering animated water foam effects.
  * Handles sprite-based animation with automatic frame updates.
@@ -91,8 +91,14 @@ public class FoamCanvas extends Canvas {
      * @param centerX center X coordinate in tile units
      * @param centerY center Y coordinate in tile units
      */
-    public void addFoamAt(int centerX, int centerY) {
+    public void paintFoam(int centerX, int centerY) {
         activeFoams.add(new FoamPosition(centerX, centerY));
+        DebugInfo.setLastAction("Added FOAM at (" + centerX + ", " + centerY + ")");
+    }
+
+    public void deleteFoam(int centerX, int centerY) {
+        activeFoams.remove(new FoamPosition(centerX, centerY));
+        DebugInfo.setLastAction("Deleted FOAM at (" + centerX + ", " + centerY + ")");
     }
 
     private void draw3x3Foam(int centerX, int centerY) {

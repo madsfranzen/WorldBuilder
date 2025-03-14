@@ -29,8 +29,9 @@ public class App extends Application {
             BorderPane root = new BorderPane();
     
             // Stack the debug overlay on top of main application
-            StackPane overlayPane = new StackPane(worldCanvas, DebugInfo.getDebugLabel());
-            StackPane.setAlignment(DebugInfo.getDebugLabel(), Pos.TOP_RIGHT);
+            StackPane overlayPane = new StackPane(worldCanvas, DebugInfo.getBox());
+            StackPane.setAlignment(DebugInfo.getBox(), Pos.TOP_RIGHT);
+            StackPane.setAlignment(DebugInfo.getBox(), Pos.TOP_RIGHT);
     
             overlayPane.setMaxSize(WINDOW_WIDTH - sidePanel.width, WINDOW_HEIGHT);
             overlayPane.setMinSize(WINDOW_WIDTH - sidePanel.width, WINDOW_HEIGHT);
