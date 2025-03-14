@@ -9,22 +9,31 @@ import com.worldbuilder.debug.DebugInfo;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
-public class SidePanel extends VBox {
+public class SidePanel extends HBox {
     public final int width = 200;
-
     private TileType selectedLayer;
+    private final VBox mainPanel;
+    private final TypesPanel typesPanel;
+    private Pane overlayPane;
+    private int windowWidth = 1200; // Default window width
 
     public SidePanel() {
-        super(12);
+        super(0); // No spacing between panels
+        
+        mainPanel = new VBox(12);
+        mainPanel.setAlignment(Pos.TOP_CENTER);
+        mainPanel.setPadding(new Insets(10));
+        mainPanel.setPrefWidth(width);
+        mainPanel.setMaxWidth(width);
+        mainPanel.setMinWidth(width);
 
-        setAlignment(Pos.TOP_CENTER);
-        setPadding(new Insets(10));
-
-        setPrefWidth(width);
-        setMaxWidth(width);
-        setMinWidth(width);
+        typesPanel = new TypesPanel();
+        typesPanel.setVisible(false);
+        typesPanel.setManaged(false);
 
         // Load the stylesheet safely
         String cssPath = Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm();
@@ -57,19 +66,63 @@ public class SidePanel extends VBox {
                         selectedLayer = config.type();
                         DebugInfo.updateSelectedLayer("SELECTED LAYER: " + selectedLayer);
                         // Update all button states in one go
-                        getChildren().stream()
+                        mainPanel.getChildren().stream()
                             .filter(node -> node instanceof Button)
                             .map(node -> (Button) node)
                             .forEach(b -> b.setDisable(b == button));
+                        
+                        // Show/hide rock type panel
+                        boolean isRocksSelected = config.type() == TileType.ROCKS;
+                        if (isRocksSelected) {
+                            typesPanel.showRocks();
+                        }
+                        typesPanel.setVisible(isRocksSelected);
+                        typesPanel.setManaged(isRocksSelected);
+                        if (!isRocksSelected) {
+                            typesPanel.resetSelection();
+                        }
+                        updateOverlayWidth();
                     });
                     return button;
                 })
                 .toList();
-        getChildren().addAll(buttons);
+        mainPanel.getChildren().addAll(buttons);
+
+        getChildren().addAll(mainPanel, typesPanel);
+    }
+
+    public void setOverlayPane(Pane overlayPane, int windowWidth) {
+        this.overlayPane = overlayPane;
+        this.windowWidth = windowWidth;
+        updateOverlayWidth();
+        
+        // Add listener for when scene is available
+        overlayPane.sceneProperty().addListener((_, _, newScene) -> {
+            if (newScene != null) {
+                updateOverlayWidth();
+            }
+        });
+    }
+
+    private void updateOverlayWidth() {
+        if (overlayPane != null) {
+            int totalWidth = width + (typesPanel.isVisible() ? typesPanel.width : 0);
+            int availableWidth = windowWidth - totalWidth;
+            overlayPane.setMaxWidth(availableWidth);
+            overlayPane.setPrefWidth(availableWidth);
+            overlayPane.setMinWidth(availableWidth);
+        }
+    }
+
+    public int getTotalWidth() {
+        return width + (typesPanel.isVisible() ? width : 0);
     }
 
     public TileType getSelectedLayer() {
         return selectedLayer;
     }
 
+    public int getSelectedRockType() {
+        return typesPanel.getSelectedIndex();
+    }
 }

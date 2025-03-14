@@ -5,11 +5,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.worldbuilder.debug.DebugInfo;
+
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import com.worldbuilder.debug.DebugInfo;
 /**
  * A specialized Canvas for rendering animated water foam effects.
  * Handles sprite-based animation with automatic frame updates.
@@ -31,10 +32,15 @@ public class FoamCanvas extends Canvas {
     private int currentFrame;
     private long lastFrameTime;
 
+    private final FoamTile[][] tileMap;
+
     /**
      * Represents a position for foam animation on the canvas.
      */
     private static record FoamPosition(int centerX, int centerY) {}
+
+    private static class FoamTile {
+    }
 
     /**
      * Creates a new FoamCanvas with specified dimensions.
@@ -49,6 +55,7 @@ public class FoamCanvas extends Canvas {
         this.foamSpritesheet = loadSprites();
         this.animator = createAnimator();
         this.animator.start();
+        this.tileMap = new FoamTile[width][height];
     }
 
     private Image loadSprites() {
@@ -91,12 +98,14 @@ public class FoamCanvas extends Canvas {
      * @param centerX center X coordinate in tile units
      * @param centerY center Y coordinate in tile units
      */
-    public void paintFoam(int centerX, int centerY) {
+    public void drawFoam(int centerX, int centerY) {
+        tileMap[centerX][centerY] = new FoamTile();
         activeFoams.add(new FoamPosition(centerX, centerY));
         DebugInfo.setLastAction("Added FOAM at (" + centerX + ", " + centerY + ")");
     }
 
     public void deleteFoam(int centerX, int centerY) {
+        tileMap[centerX][centerY] = null;
         activeFoams.remove(new FoamPosition(centerX, centerY));
         DebugInfo.setLastAction("Deleted FOAM at (" + centerX + ", " + centerY + ")");
     }

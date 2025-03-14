@@ -28,6 +28,7 @@ public final class WorldCanvas extends ScrollPane {
 
     private final GrassCanvas grassCanvas;
     private final WaterCanvas waterCanvas;
+    private final RocksCanvas rocksCanvas;
     private final SandCanvas sandCanvas;
     private final FoamCanvas foamCanvas;
     private final ShadowCanvas shadowCanvas;
@@ -74,6 +75,10 @@ public final class WorldCanvas extends ScrollPane {
         canvasContainer.getChildren().add(sandCanvas);
         sandCanvas.setMouseTransparent(true);
 
+        rocksCanvas = new RocksCanvas(width, height);
+        canvasContainer.getChildren().add(rocksCanvas);
+        rocksCanvas.setMouseTransparent(true);
+
         grassCanvas = new GrassCanvas(width, height);
         canvasContainer.getChildren().add(grassCanvas);
         grassCanvas.setMouseTransparent(true);
@@ -117,6 +122,7 @@ public final class WorldCanvas extends ScrollPane {
 
     private void setupMouseHandlers() {
         gridCanvas.setOnMouseMoved(this::updateTilePosition);
+
         gridCanvas.setOnMousePressed(event -> {
             updateTilePosition(event);
 
@@ -126,17 +132,22 @@ public final class WorldCanvas extends ScrollPane {
             } else {
                 paintTile();
             }
-
         });
 
         gridCanvas.setOnMouseDragged(event -> {
             updateTilePosition(event);
 
-            // IF RIGHT CLICK
-            if (event.isSecondaryButtonDown()) {
-                deleteTile();
+            DebugInfo.updatePosition("COORDINATES", event.getX(), event.getY());
+
+            if (event.getX() < 0 || event.getY() < 0) {
+                event.consume();
+                DebugInfo.setError("CANNOT PAINT OUTSIDE OF CANVAS");
             } else {
-                paintTile();
+                if (event.isSecondaryButtonDown()) {
+                    deleteTile();
+                } else {
+                    paintTile();
+                }
             }
         });
     }
@@ -169,16 +180,19 @@ public final class WorldCanvas extends ScrollPane {
                 waterCanvas.drawWater(currentTileX, currentTileY);
             }
             case FOAM -> {
-                foamCanvas.paintFoam(currentTileX, currentTileY);
+                foamCanvas.drawFoam(currentTileX, currentTileY);
             }
             case SAND -> {
-                sandCanvas.paintSand(currentTileX, currentTileY);
+                sandCanvas.drawSand(currentTileX, currentTileY, true);
             }
             case GRASS -> {
-                grassCanvas.drawGrass(currentTileX, currentTileY);
+                grassCanvas.drawGrass(currentTileX, currentTileY, true);
             }
             case SHADOW -> {
                 shadowCanvas.drawShadow(currentTileX, currentTileY);
+            }
+            case ROCKS -> {
+                rocksCanvas.drawRocks(currentTileX, currentTileY, App.getSidePanel().getSelectedRockType());
             }
             case null -> DebugInfo.setError("NO LAYER SELECTED");
             default -> DebugInfo.setError("NO LAYER SELECTED");
@@ -202,10 +216,12 @@ public final class WorldCanvas extends ScrollPane {
             case SHADOW -> {
                 shadowCanvas.deleteShadow(currentTileX, currentTileY);
             }
+            case ROCKS -> {
+                // rocksCanvas.deleteRocks(currentTileX, currentTileY);
+            }
             case null -> DebugInfo.setError("NO LAYER SELECTED");
             default -> DebugInfo.setError("NO LAYER SELECTED");
         }
-
     }
 
     public void drawGrid() {
