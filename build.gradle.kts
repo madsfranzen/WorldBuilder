@@ -43,7 +43,7 @@ javafx {
 
 java {
     toolchain { 
-        languageVersion.set(JavaLanguageVersion.of(23))  // Match your installed Java version
+        languageVersion.set(JavaLanguageVersion.of(21))  // Match your installed Java version
     }
 }
 
