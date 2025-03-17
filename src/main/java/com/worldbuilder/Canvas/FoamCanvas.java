@@ -1,11 +1,11 @@
 package com.worldbuilder.Canvas;
 
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.worldbuilder.debug.DebugInfo;
+import com.worldbuilder.SpriteLoader;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
@@ -23,7 +23,6 @@ public class FoamCanvas extends Canvas {
     private static final int FRAME_WIDTH = TILE_SIZE * GRID_SIZE;
     private static final int FRAME_HEIGHT = TILE_SIZE * GRID_SIZE;
     private static final long FRAME_DURATION_NS = 100_000_000; // 100ms in nanoseconds
-    private static final String SPRITE_PATH = "/assets/Terrain/Water/Foam/Foam.png";
 
     private final Image foamSpritesheet;
     private final Set<FoamPosition> activeFoams;
@@ -52,21 +51,10 @@ public class FoamCanvas extends Canvas {
     public FoamCanvas(int width, int height) {
         super(width, height);
         this.activeFoams = Collections.synchronizedSet(new HashSet<>());
-        this.foamSpritesheet = loadSprites();
+        this.foamSpritesheet = SpriteLoader.getFoamSpritesheet();
         this.animator = createAnimator();
         this.animator.start();
         this.tileMap = new FoamTile[width][height];
-    }
-
-    private Image loadSprites() {
-        try (InputStream is = getClass().getResourceAsStream(SPRITE_PATH)) {
-            if (is == null) {
-                throw new RuntimeException("Failed to load foam spritesheet: Resource not found");
-            }
-            return new Image(is);
-        } catch (Exception e) {
-            throw new RuntimeException("Error loading foam spritesheet", e);
-        }
     }
 
     private AnimationTimer createAnimator() {

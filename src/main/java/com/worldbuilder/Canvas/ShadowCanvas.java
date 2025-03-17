@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.worldbuilder.debug.DebugInfo;
+import com.worldbuilder.SpriteLoader;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -15,16 +16,16 @@ import javafx.scene.image.Image;
  * proper overlap handling and visual consistency.
  */
 public class ShadowCanvas extends Canvas {
+    private final GraphicsContext gc = getGraphicsContext2D();
 
     // Constants for tile dimensions and shadow properties
     private static final int TILE_SIZE = 64;
     private static final int SHADOW_SIZE = TILE_SIZE * 3;
     private static final int SHADOW_CONNECTION_RADIUS = 2;
     
-    private static final Image SHADOW_IMAGE = new Image(ShadowCanvas.class.getResourceAsStream("/assets/Terrain/Ground/Shadows.png"));
+    private static final Image SHADOW_IMAGE = SpriteLoader.getShadowsImage();
 
     
-    private final GraphicsContext gc = getGraphicsContext2D();
     private final ShadowTileMap[][] tileMap;
 
     /**

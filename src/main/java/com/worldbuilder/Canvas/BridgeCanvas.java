@@ -3,10 +3,11 @@ package com.worldbuilder.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
+import com.worldbuilder.SpriteLoader;
 
 public class BridgeCanvas extends Canvas {
     private final GraphicsContext gc = getGraphicsContext2D();
-    private final Image TILESET = new Image(getClass().getResourceAsStream("/assets/Terrain/Bridge/Bridge_All.png"));
+    private final Image TILESET = SpriteLoader.getBridgeTileset();
     private final int TILE_SIZE = 64;
     private final BridgeTile[][] tileMap;
 
@@ -14,7 +15,7 @@ public class BridgeCanvas extends Canvas {
         super(width, height);
         this.tileMap = new BridgeTile[width][height];
     }
-
+    
     private static record BridgeTile(TileVariant variant) {}
 
     private static record TileVariant(String name, int x, int y) {}

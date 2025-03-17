@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.worldbuilder.debug.DebugInfo;
+import com.worldbuilder.SpriteLoader;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
@@ -22,16 +23,7 @@ public class RocksCanvas extends Canvas {
     private static final long FRAME_DURATION_NS = 100_000_000; // 100ms in nanoseconds
 
     // Load the 4 rock type images
-    private static final Image ROCKS_IMAGE1 = new Image(
-            RocksCanvas.class.getResourceAsStream("/assets/Terrain/Water/Rocks/Rocks_01.png"));
-    private static final Image ROCKS_IMAGE2 = new Image(
-            RocksCanvas.class.getResourceAsStream("/assets/Terrain/Water/Rocks/Rocks_02.png"));
-    private static final Image ROCKS_IMAGE3 = new Image(
-            RocksCanvas.class.getResourceAsStream("/assets/Terrain/Water/Rocks/Rocks_03.png"));
-    private static final Image ROCKS_IMAGE4 = new Image(
-            RocksCanvas.class.getResourceAsStream("/assets/Terrain/Water/Rocks/Rocks_04.png"));
-
-    private static final Image[] ROCKS_IMAGES = { ROCKS_IMAGE1, ROCKS_IMAGE2, ROCKS_IMAGE3, ROCKS_IMAGE4 };
+    private static final Image[] ROCKS_IMAGES = SpriteLoader.getAllRocksImages();
 
     private final GraphicsContext gc;
     private final RocksTile[][] tileMap;

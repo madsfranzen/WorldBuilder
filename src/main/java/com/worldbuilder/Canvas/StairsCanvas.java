@@ -3,14 +3,14 @@ package com.worldbuilder.Canvas;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import com.worldbuilder.SpriteLoader;
 
 public class StairsCanvas extends Canvas {
     private final GraphicsContext gc;
     private final int TILE_SIZE = 64;
 
     private final StairsTile[][] tileMap;
-    private final Image TILESET = new Image(
-            GroundCanvas.class.getResourceAsStream("/assets/Terrain/Ground/Tilemap_Elevation.png"));
+    private final Image TILESET = SpriteLoader.getElevationTileset();
 
     public StairsCanvas(int width, int height) {
         super(width, height);

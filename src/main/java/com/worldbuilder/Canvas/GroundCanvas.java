@@ -1,13 +1,13 @@
 package com.worldbuilder.Canvas;
 
 import com.worldbuilder.debug.DebugInfo;
+import com.worldbuilder.SpriteLoader;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
-import java.io.InputStream;
 
 /**
  * Abstract base class for ground tile canvases.
@@ -19,18 +19,7 @@ public abstract class GroundCanvas extends Canvas {
     
     static {
         try {
-            InputStream resourceStream = GroundCanvas.class.getResourceAsStream("/assets/Terrain/Ground/Tilemap_Flat.png");
-            if (resourceStream == null) {
-                System.err.println("ERROR: Could not find tileset image at /assets/Terrain/Ground/Tilemap_Flat.png");
-                // Create a fallback image with a grid pattern
-                TILESET = createFallbackImage();
-            } else {
-                TILESET = new Image(resourceStream);
-                if (TILESET.isError()) {
-                    System.err.println("ERROR: Failed to load tileset image: " + TILESET.getException().getMessage());
-                    TILESET = createFallbackImage();
-                }
-            }
+            TILESET = SpriteLoader.getGroundTileset();
         } catch (Exception e) {
             System.err.println("ERROR: Exception loading tileset image: " + e.getMessage());
             e.printStackTrace();

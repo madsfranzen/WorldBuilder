@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.worldbuilder.debug.DebugInfo;
+import com.worldbuilder.SpriteLoader;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -70,15 +71,14 @@ public class TypesPanel extends VBox {
             button.setPrefHeight(64);
             button.setMinHeight(64);
             button.setMaxHeight(64);
-            String imagePath = "/assets/Terrain/Water/Rocks/Rocks_0" + (typeIndex + 1) + ".png";
-            Image image = new Image(getClass().getResourceAsStream(imagePath));
+            
+            // Get rock image from SpriteLoader
+            Image rockImage = SpriteLoader.getRocksImage(typeIndex + 1);
+            
             // Extract single frame from sprite sheet based on index
-            int frameWidth = (int)image.getWidth() / 8; // Image has 8 frames
-            int frameHeight = (int)image.getHeight();
-            WritableImage frame = new WritableImage(image.getPixelReader(), 
-                typeIndex * frameWidth, 0, frameWidth, frameHeight);
-            image = frame;
-            ImageView imageView = new ImageView(image);
+            WritableImage frame = SpriteLoader.extractFrame(rockImage, 0, 8); // 8 frames in the spritesheet
+            
+            ImageView imageView = new ImageView(frame);
             imageView.setFitWidth(85);
             imageView.setFitHeight(85);
             imageView.setTranslateX(-20);

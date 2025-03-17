@@ -4,10 +4,12 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import com.worldbuilder.debug.DebugInfo;
+import com.worldbuilder.SpriteLoader;
+
 public class WaterCanvas extends Canvas {
     private final GraphicsContext gc = getGraphicsContext2D();
 
-    private final Image waterTile = new Image(getClass().getResourceAsStream("/assets/Terrain/Water/Water.png"));
+    private final Image waterTile = SpriteLoader.getWaterTile();
 
     public WaterCanvas(int width, int height) {
         super(width, height);

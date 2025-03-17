@@ -78,7 +78,12 @@ tasks {
     }
 }
 
+
 application { 
     mainClass.set("com.worldbuilder.App")
-    applicationDefaultJvmArgs = listOf("-Xmx2g")
+    applicationDefaultJvmArgs = listOf(
+        "-Xmx2g",
+        "-Dprism.verbose=true",   // Enable verbose logging for the graphics pipeline 🔍
+        "-Dprism.debug=true"      // Additional debugging info about JavaFX graphics 🐞
+    )
 }

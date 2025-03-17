@@ -3,13 +3,14 @@ package com.worldbuilder.Canvas;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import com.worldbuilder.SpriteLoader;
 
 public class PlateauCanvas extends Canvas {
     private final GraphicsContext gc = getGraphicsContext2D();
     private final int TILE_SIZE = 64;
     
     private final PlateauTile[][] tileMap;
-    private final Image TILESET = new Image(getClass().getResourceAsStream("/assets/Terrain/Ground/Tilemap_Elevation.png"));
+    private final Image TILESET = SpriteLoader.getElevationTileset();
 
     public PlateauCanvas(int width, int height) {
         super(width, height);
