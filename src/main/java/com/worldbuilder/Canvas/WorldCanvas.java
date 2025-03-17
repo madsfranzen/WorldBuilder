@@ -67,38 +67,39 @@ public final class WorldCanvas extends ScrollPane {
 
         waterCanvas = new WaterCanvas(width, height);
         canvasList.add(waterCanvas);
-        waterCanvas.setMouseTransparent(true);
 
         foamCanvas = new FoamCanvas(width, height);
         canvasList.add(foamCanvas);
-        foamCanvas.setMouseTransparent(true);
 
         sandCanvas = new SandCanvas(width, height);
         canvasList.add(sandCanvas);
-        sandCanvas.setMouseTransparent(true);
 
         rocksCanvas = new RocksCanvas(width, height);
         canvasList.add(rocksCanvas);
-        rocksCanvas.setMouseTransparent(true);
 
         grassCanvas = new GrassCanvas(width, height);
         canvasList.add(grassCanvas);
-        grassCanvas.setMouseTransparent(true);
 
         shadowCanvas = new ShadowCanvas(width, height);
         canvasList.add(shadowCanvas);
-        shadowCanvas.setMouseTransparent(true);
 
         // Initialize hover canvas
         hoverCanvas = new Canvas(width, height);
         canvasList.add(hoverCanvas);
-        hoverCanvas.setMouseTransparent(true);
 
         // Configure ScrollPane
         setupScrollPane(width, height);
 
         // Draw initial grid
         drawGrid();
+
+        for (Canvas canvas : canvasList) {
+            canvas.setCache(true);
+            canvas.setCacheHint(javafx.scene.CacheHint.SPEED);
+            canvas.setMouseTransparent(true);
+        }
+        
+        gridCanvas.setMouseTransparent(false);
 
         // Add all canvases to the container
         canvasContainer.getChildren().addAll(canvasList);
@@ -109,18 +110,34 @@ public final class WorldCanvas extends ScrollPane {
 
     private void setupScrollPane(int width, int height) {
         setContent(canvasContainer);
-        setPannable(false);
+        setPannable(false); // Disable panning to prevent view movement when painting
         setHbarPolicy(ScrollBarPolicy.ALWAYS);
         setVbarPolicy(ScrollBarPolicy.ALWAYS);
-        setFitToWidth(true);
-        setFitToHeight(true);
 
-        // Enable mouse wheel panning
+        // Don't use fitToWidth/Height as they can cause performance issues
+        setFitToWidth(false);
+        setFitToHeight(false);
+
+        // Set viewport size - this prevents re-layout calculations
+        setPrefViewportWidth(800);
+        setPrefViewportHeight(600);
+
+        // Use hardware acceleration for the scroll pane
+        setCache(true);
+        setCacheHint(javafx.scene.CacheHint.SPEED);
+
+        // Optimize scrolling speed based on size
+        double scrollFactor = 0.001 * Math.min(width, height);
+
+        // Handle scroll events with throttling
         setOnScroll(event -> {
             event.consume();
-            double panSpeed = 10.0;
-            setHvalue(getHvalue() - event.getDeltaX() / panSpeed / width);
-            setVvalue(getVvalue() - event.getDeltaY() / panSpeed / height);
+            double deltaX = event.getDeltaX() * scrollFactor;
+            double deltaY = event.getDeltaY() * scrollFactor;
+
+            // Apply scroll changes
+            setHvalue(getHvalue() - deltaX);
+            setVvalue(getVvalue() - deltaY);
         });
     }
 

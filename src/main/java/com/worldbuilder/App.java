@@ -19,13 +19,19 @@ public class App extends Application {
     static WorldCanvas worldCanvas = new WorldCanvas(32, 32);
     
     public static void main(String[] args) {
-        // Disable hardware acceleration to fix rendering issues
-        System.setProperty("prism.order", "sw");
+        // Hardware acceleration settings
+        System.setProperty("prism.order", "d3d,metal,es2,sw"); // Try hardware acceleration first
+        System.setProperty("prism.forceGPU", "true"); // Force GPU usage
         System.setProperty("prism.text", "t2k");
         System.setProperty("javafx.animation.fullspeed", "true");
-        System.setProperty("prism.maxvram", "2048m"); // Limit texture memory
-        System.setProperty("javafx.preloader", "true"); // Enable preloading
+        System.setProperty("prism.maxvram", "4g"); // Increased texture memory
+        
+        // Performance optimizations
+        System.setProperty("prism.targetfps", "60");  // Target framerate
+        System.setProperty("javafx.animation.pulse", "60"); // Animation pulse rate
         System.setProperty("prism.vsync", "false"); // Disable vsync if not needed
+        System.setProperty("prism.dirtyopts", "false"); // Disable dirty region optimizations
+        System.setProperty("quantum.multithreaded", "true"); // Enable multithreaded rendering
       
         System.out.println("Hello, WorldBuilder 2.0!");
         launch(args);
@@ -33,6 +39,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        
         // Create main components with access to debug info
         BorderPane root = new BorderPane();
 

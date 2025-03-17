@@ -71,3 +71,4 @@ $RECYCLE.BIN/
 *.log
 logs/
 
+gradle.properties
