@@ -43,7 +43,7 @@ javafx {
 
 java {
     toolchain { 
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(23))  // Match your installed Java version
     }
 }
 
@@ -64,6 +64,11 @@ tasks {
     
     withType<JavaExec> {
         standardInput = System.`in`
+        jvmArgs = listOf(
+            "-XX:+UseG1GC",
+            "-XX:MaxGCPauseMillis=100",
+            "-XX:+UseStringDeduplication"
+        )
     }
     
     processResources {
@@ -78,5 +83,7 @@ application {
     mainClass.set("com.worldbuilder.App")
     applicationDefaultJvmArgs = listOf(
         "-Xmx2g",
+        "-Dprism.verbose=true",   // Enable verbose logging for the graphics pipeline 🔍
+        "-Dprism.debug=true"      // Additional debugging info about JavaFX graphics 🐞
     )
 }
