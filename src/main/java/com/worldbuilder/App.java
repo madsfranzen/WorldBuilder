@@ -19,6 +19,14 @@ public class App extends Application {
     static WorldCanvas worldCanvas = new WorldCanvas(32, 32);
     
     public static void main(String[] args) {
+        // Disable hardware acceleration to fix rendering issues
+        System.setProperty("prism.order", "sw");
+        System.setProperty("prism.text", "t2k");
+        System.setProperty("javafx.animation.fullspeed", "true");
+        System.setProperty("prism.maxvram", "2048m"); // Limit texture memory
+        System.setProperty("javafx.preloader", "true"); // Enable preloading
+        System.setProperty("prism.vsync", "false"); // Disable vsync if not needed
+      
         System.out.println("Hello, WorldBuilder 2.0!");
         launch(args);
     }
@@ -40,7 +48,12 @@ public class App extends Application {
         root.setCenter(overlayPane);
         root.setLeft(sidePanel);
 
+        root.setStyle("-fx-background-color: #f0f0f0;");
+        
         Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
+        // Set background color for the scene
+        scene.setFill(javafx.scene.paint.Color.LIGHTGRAY);
+        
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.setTitle("WorldBuilder 2.0");

@@ -5,6 +5,9 @@ import com.worldbuilder.debug.DebugInfo;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
+
+import java.io.InputStream;
 
 /**
  * Abstract base class for ground tile canvases.
@@ -12,7 +15,48 @@ import javafx.scene.image.Image;
  */
 public abstract class GroundCanvas extends Canvas {
     protected static final int TILE_SIZE = 64;
-    protected static final Image TILESET = new Image(GroundCanvas.class.getResourceAsStream("/assets/Terrain/Ground/Tilemap_Flat.png"));
+    protected static Image TILESET;
+    
+    static {
+        try {
+            InputStream resourceStream = GroundCanvas.class.getResourceAsStream("/assets/Terrain/Ground/Tilemap_Flat.png");
+            if (resourceStream == null) {
+                System.err.println("ERROR: Could not find tileset image at /assets/Terrain/Ground/Tilemap_Flat.png");
+                // Create a fallback image with a grid pattern
+                TILESET = createFallbackImage();
+            } else {
+                TILESET = new Image(resourceStream);
+                if (TILESET.isError()) {
+                    System.err.println("ERROR: Failed to load tileset image: " + TILESET.getException().getMessage());
+                    TILESET = createFallbackImage();
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("ERROR: Exception loading tileset image: " + e.getMessage());
+            e.printStackTrace();
+            TILESET = createFallbackImage();
+        }
+    }
+    
+    private static Image createFallbackImage() {
+        // Create a simple 4x4 grid pattern as fallback
+        Canvas fallbackCanvas = new Canvas(TILE_SIZE * 4, TILE_SIZE * 4);
+        GraphicsContext gc = fallbackCanvas.getGraphicsContext2D();
+        
+        // Fill with a light color
+        gc.setFill(Color.LIGHTGRAY);
+        gc.fillRect(0, 0, fallbackCanvas.getWidth(), fallbackCanvas.getHeight());
+        
+        // Draw grid lines
+        gc.setStroke(Color.DARKGRAY);
+        gc.setLineWidth(1);
+        for (int i = 0; i <= 4; i++) {
+            gc.strokeLine(i * TILE_SIZE, 0, i * TILE_SIZE, fallbackCanvas.getHeight());
+            gc.strokeLine(0, i * TILE_SIZE, fallbackCanvas.getWidth(), i * TILE_SIZE);
+        }
+        
+        return fallbackCanvas.snapshot(null, null);
+    }
     
     protected final GraphicsContext gc;
     protected final TerrainTile[][] tileMap;

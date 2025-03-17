@@ -1,5 +1,8 @@
 package com.worldbuilder.Canvas;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.worldbuilder.App;
 import com.worldbuilder.debug.DebugInfo;
 
@@ -7,7 +10,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
 /**
@@ -24,7 +27,7 @@ public final class WorldCanvas extends ScrollPane {
 
     private final Canvas gridCanvas;
     private final Canvas hoverCanvas;
-    private final Pane canvasContainer;
+    private final StackPane canvasContainer;
 
     private final GrassCanvas grassCanvas;
     private final WaterCanvas waterCanvas;
@@ -32,6 +35,8 @@ public final class WorldCanvas extends ScrollPane {
     private final SandCanvas sandCanvas;
     private final FoamCanvas foamCanvas;
     private final ShadowCanvas shadowCanvas;
+
+    private final List<Canvas> canvasList = new ArrayList<>();
 
     // Current tile position (mouse)
     private int currentTileX;
@@ -51,45 +56,42 @@ public final class WorldCanvas extends ScrollPane {
         int height = WORLD_HEIGHT * TILE_SIZE;
 
         // Setup canvas container
-        canvasContainer = new Pane();
-        canvasContainer.setPrefSize(width, height);
-        canvasContainer.setMaxSize(width, height);
-        canvasContainer.setMinSize(width, height);
+        canvasContainer = new StackPane();
 
         // Initialize main grid canvas
         gridCanvas = new Canvas(width, height);
+        canvasList.add(gridCanvas);
         setupMouseHandlers();
-        canvasContainer.getChildren().add(gridCanvas);
 
         // Add drawing canvases to the container
 
         waterCanvas = new WaterCanvas(width, height);
-        canvasContainer.getChildren().add(waterCanvas);
+        canvasList.add(waterCanvas);
         waterCanvas.setMouseTransparent(true);
 
         foamCanvas = new FoamCanvas(width, height);
-        canvasContainer.getChildren().add(foamCanvas);
+        canvasList.add(foamCanvas);
         foamCanvas.setMouseTransparent(true);
 
         sandCanvas = new SandCanvas(width, height);
-        canvasContainer.getChildren().add(sandCanvas);
+        canvasList.add(sandCanvas);
         sandCanvas.setMouseTransparent(true);
 
         rocksCanvas = new RocksCanvas(width, height);
-        canvasContainer.getChildren().add(rocksCanvas);
+        canvasList.add(rocksCanvas);
         rocksCanvas.setMouseTransparent(true);
 
         grassCanvas = new GrassCanvas(width, height);
-        canvasContainer.getChildren().add(grassCanvas);
+        canvasList.add(grassCanvas);
         grassCanvas.setMouseTransparent(true);
 
         shadowCanvas = new ShadowCanvas(width, height);
-        canvasContainer.getChildren().add(shadowCanvas);
+        canvasList.add(shadowCanvas);
         shadowCanvas.setMouseTransparent(true);
 
         // Initialize hover canvas
         hoverCanvas = new Canvas(width, height);
-        canvasContainer.getChildren().add(hoverCanvas);
+        canvasList.add(hoverCanvas);
         hoverCanvas.setMouseTransparent(true);
 
         // Configure ScrollPane
@@ -97,6 +99,10 @@ public final class WorldCanvas extends ScrollPane {
 
         // Draw initial grid
         drawGrid();
+
+        // Add all canvases to the container
+        canvasContainer.getChildren().addAll(canvasList);
+
     }
 
     // ================== SCROLL PANE SETUP ==================//
@@ -217,7 +223,7 @@ public final class WorldCanvas extends ScrollPane {
                 shadowCanvas.deleteShadow(currentTileX, currentTileY);
             }
             case ROCKS -> {
-                // rocksCanvas.deleteRocks(currentTileX, currentTileY);
+                rocksCanvas.deleteRocks(currentTileX, currentTileY);
             }
             case null -> DebugInfo.setError("NO LAYER SELECTED");
             default -> DebugInfo.setError("NO LAYER SELECTED");

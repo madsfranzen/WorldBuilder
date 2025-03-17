@@ -22,8 +22,9 @@ public class ShadowCanvas extends Canvas {
     private static final int SHADOW_CONNECTION_RADIUS = 2;
     
     private static final Image SHADOW_IMAGE = new Image(ShadowCanvas.class.getResourceAsStream("/assets/Terrain/Ground/Shadows.png"));
+
     
-    private final GraphicsContext gc;
+    private final GraphicsContext gc = getGraphicsContext2D();
     private final ShadowTileMap[][] tileMap;
 
     /**
@@ -41,7 +42,6 @@ public class ShadowCanvas extends Canvas {
      */
     public ShadowCanvas(int width, int height) {
         super(width, height);
-        this.gc = getGraphicsContext2D();
         this.tileMap = new ShadowTileMap[width][height];
     }
 
