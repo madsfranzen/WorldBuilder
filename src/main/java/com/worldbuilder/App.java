@@ -52,7 +52,7 @@ public class App extends Application {
         overlayPane.setPrefSize(WINDOW_WIDTH - sidePanel.getTotalWidth(), WINDOW_HEIGHT);
         sidePanel.setOverlayPane(overlayPane, WINDOW_WIDTH);
 
-        root.setCenter(overlayPane);
+        root.setRight(overlayPane);
         root.setLeft(sidePanel);
 
         root.setStyle("-fx-background-color: #f0f0f0;");
@@ -72,7 +72,7 @@ public class App extends Application {
         return sidePanel;
     }
 
-    public WorldCanvas getWorldCanvas() {
+    public static WorldCanvas getWorldCanvas() {
         return worldCanvas;
     }
 }

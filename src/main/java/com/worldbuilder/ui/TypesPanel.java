@@ -45,14 +45,13 @@ public class TypesPanel extends VBox {
         titleLabel.setPadding(new Insets(0, 0, 10, 0));
     }
 
-
     public void resetSelection() {
         selectedType = 0;
         selectedIndex = 0;
         getChildren().stream()
-            .filter(node -> node instanceof Button)
-            .map(node -> (Button) node)
-            .forEach(button -> button.setDisable(false));
+                .filter(node -> node instanceof Button)
+                .map(node -> (Button) node)
+                .forEach(button -> button.setDisable(false));
     }
 
     public void showRocks() {
@@ -71,13 +70,13 @@ public class TypesPanel extends VBox {
             button.setPrefHeight(64);
             button.setMinHeight(64);
             button.setMaxHeight(64);
-            
+
             // Get rock image from SpriteLoader
             Image rockImage = SpriteLoader.getRocksImage(typeIndex + 1);
-            
+
             // Extract single frame from sprite sheet based on index
             WritableImage frame = SpriteLoader.extractFrame(rockImage, 0, 8); // 8 frames in the spritesheet
-            
+
             ImageView imageView = new ImageView(frame);
             imageView.setFitWidth(85);
             imageView.setFitHeight(85);
@@ -85,18 +84,18 @@ public class TypesPanel extends VBox {
             imageView.setTranslateY(0);
             button.setGraphic(imageView);
             button.setFocusTraversable(false);
-            button.setOnAction(_ -> {
+            button.setOnAction(event -> {
                 selectedIndex = typeIndex;
                 selectedType = typeIndex + 1;
                 buttons.stream()
-                    .filter(b -> b != button)
-                    .forEach(b -> b.setDisable(false));
+                        .filter(b -> b != button)
+                        .forEach(b -> b.setDisable(false));
                 button.setDisable(true);
                 DebugInfo.updateSelectedLayer("SELECTED " + typeName + " TYPE: " + selectedType);
             });
             getChildren().add(button);
         }
-    } 
+    }
 
     public int getSelectedIndex() {
         return selectedIndex;

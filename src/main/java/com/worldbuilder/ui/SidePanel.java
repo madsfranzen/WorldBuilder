@@ -3,7 +3,9 @@ package com.worldbuilder.ui;
 import java.util.List;
 import java.util.Objects;
 
+import com.worldbuilder.App;
 import com.worldbuilder.TileType;
+import com.worldbuilder.Canvas.WorldCanvas;
 import com.worldbuilder.debug.DebugInfo;
 
 import javafx.geometry.Insets;
@@ -20,6 +22,11 @@ public class SidePanel extends HBox {
     private final TypesPanel typesPanel;
     private Pane overlayPane;
     private int windowWidth = 1200; // Default window width
+
+    private final Button saveButton = new Button("Save");
+    private final Button loadButton = new Button("Load");
+    private final Button exportButton = new Button("Export");
+    private final Button importButton = new Button("Import");
 
     public SidePanel() {
         super(0); // No spacing between panels
@@ -62,7 +69,7 @@ public class SidePanel extends HBox {
                 .map(config -> {
                     Button button = new Button(config.text());
                     button.getStyleClass().add("side-panel-button");
-                    button.setOnAction(_ -> {
+                    button.setOnAction(event -> {
                         selectedLayer = config.type();
                         DebugInfo.updateSelectedLayer("SELECTED LAYER: " + selectedLayer);
                         // Update all button states in one go
@@ -88,6 +95,19 @@ public class SidePanel extends HBox {
                 .toList();
         mainPanel.getChildren().addAll(buttons);
 
+        exportButton.setOnAction(event -> {
+            System.out.println("Exporting");
+            WorldCanvas worldCanvas = App.getWorldCanvas();
+            worldCanvas.export();
+        });
+
+        HBox buttonBox1 = new HBox(12);
+        HBox buttonBox2 = new HBox(12);
+        buttonBox1.setAlignment(Pos.CENTER);
+        buttonBox2.setAlignment(Pos.CENTER);
+        buttonBox1.getChildren().addAll(saveButton, loadButton);
+        buttonBox2.getChildren().addAll(exportButton, importButton);
+        mainPanel.getChildren().addAll(buttonBox1, buttonBox2);
         getChildren().addAll(mainPanel, typesPanel);
     }
 
@@ -97,7 +117,7 @@ public class SidePanel extends HBox {
         updateOverlayWidth();
         
         // Add listener for when scene is available
-        overlayPane.sceneProperty().addListener((_, _, newScene) -> {
+        overlayPane.sceneProperty().addListener((observable, oldScene, newScene) -> {
             if (newScene != null) {
                 updateOverlayWidth();
             }

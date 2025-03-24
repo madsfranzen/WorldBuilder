@@ -3,12 +3,20 @@ package com.worldbuilder.Canvas;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageOutputStream;
+
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
+
 import com.worldbuilder.App;
 import com.worldbuilder.debug.DebugInfo;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -262,6 +270,26 @@ public final class WorldCanvas extends ScrollPane {
             gc.strokeLine(0, y * TILE_SIZE, gridCanvas.getWidth(), y * TILE_SIZE);
         }
     }
+
+    // ================== SAVE, LOAD, EXPORT, IMPORT ==================//
+
+    public void export() {
+        // TODO: Implement export
+    }
+
+    public void importfunc() {
+        // TODO: Implement import
+    }
+
+    public void save() {
+        // TODO: Implement save
+    }
+
+    public void load() {
+        // TODO: Implement load
+    }
+    
+    
 
     // ================== GETTERS ==================//
 
