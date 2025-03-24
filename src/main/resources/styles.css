@@ -19,6 +19,40 @@
     -fx-text-alignment: center;
 }
 
+
+.importExportButton {
+    -fx-background-color: linear-gradient(to bottom right, #2c3e50, #34495e);
+    -fx-text-fill: #ecf0f1;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-pref-width: 160px;
+    -fx-max-width: 160px;
+    -fx-min-height: 38px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 2);
+    -fx-cursor: hand;
+    -fx-padding: 10px 15px;
+    -fx-border-width: 0;
+    -fx-margin: 4px 0;
+    -fx-transition-duration: 0.2s;
+    -fx-alignment: center;
+    -fx-content-display: center;
+    -fx-text-alignment: center;
+    -fx-padding-top: 20px;
+}
+
+.importExportButton .text {
+    -fx-text-alignment: center;
+}
+
+.importExportButton:hover {
+    -fx-background-color: linear-gradient(to bottom right, #3498db, #2980b9);
+    -fx-effect: dropshadow(gaussian, rgba(52,152,219,0.4), 10, 0, 0, 3);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+
 /* Container style to ensure buttons stay centered */
 .side-panel-button .text {
     -fx-text-alignment: center;

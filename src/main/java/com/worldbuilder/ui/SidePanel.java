@@ -1,11 +1,12 @@
 package com.worldbuilder.ui;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
 import com.worldbuilder.App;
-import com.worldbuilder.TileType;
 import com.worldbuilder.Canvas.WorldCanvas;
+import com.worldbuilder.TileType;
 import com.worldbuilder.debug.DebugInfo;
 
 import javafx.geometry.Insets;
@@ -59,9 +60,10 @@ public class SidePanel extends HBox {
                 new ButtonConfig("STAIRS", TileType.STAIRS),
                 new ButtonConfig("PLATEAU", TileType.PLATEAU),
                 new ButtonConfig("WALL", TileType.WALL),
-                new ButtonConfig("FILL", TileType.FILL),
+                new ButtonConfig("GRASSFILL", TileType.GRASSFILL),
+                new ButtonConfig("SANDFILL", TileType.SANDFILL),
                 new ButtonConfig("BRIDGE", TileType.BRIDGE),
-                new ButtonConfig("BRIDGE SHADOW", TileType.BRIDGE_SHADOW),
+                new ButtonConfig("BRIDGESHADOW", TileType.BRIDGESHADOW),
                 new ButtonConfig("DECO", TileType.DECO));
 
         // Create and configure all buttons
@@ -101,13 +103,25 @@ public class SidePanel extends HBox {
             worldCanvas.export();
         });
 
-        HBox buttonBox1 = new HBox(12);
-        HBox buttonBox2 = new HBox(12);
-        buttonBox1.setAlignment(Pos.CENTER);
-        buttonBox2.setAlignment(Pos.CENTER);
-        buttonBox1.getChildren().addAll(saveButton, loadButton);
-        buttonBox2.getChildren().addAll(exportButton, importButton);
-        mainPanel.getChildren().addAll(buttonBox1, buttonBox2);
+        importButton.setOnAction(event -> {
+            WorldCanvas worldCanvas = App.getWorldCanvas();
+            try {
+                worldCanvas.importfunc();
+            } catch (IOException e) {
+                DebugInfo.setError("Failed to import world: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+
+
+        exportButton.getStyleClass().add("importExportButton");
+        importButton.getStyleClass().add("importExportButton");
+        HBox buttonBox = new HBox(12);
+        HBox.setMargin(exportButton, new Insets(12, 0, 0, 0));
+        HBox.setMargin(importButton, new Insets(12, 0, 0, 0));
+        buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.getChildren().addAll(exportButton, importButton);
+        mainPanel.getChildren().addAll(buttonBox);
         getChildren().addAll(mainPanel, typesPanel);
     }
 

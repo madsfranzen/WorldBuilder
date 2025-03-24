@@ -3,8 +3,8 @@ package com.worldbuilder.Canvas;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.worldbuilder.debug.DebugInfo;
 import com.worldbuilder.SpriteLoader;
+import com.worldbuilder.debug.DebugInfo;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -143,5 +143,9 @@ public class ShadowCanvas extends Canvas {
      */
     private boolean isOutOfBounds(int x, int y) {
         return x < 0 || x >= tileMap.length || y < 0 || y >= tileMap[0].length;
+    }
+
+    public ShadowTileMap[][] getTileMap() {
+        return tileMap;
     }
 }

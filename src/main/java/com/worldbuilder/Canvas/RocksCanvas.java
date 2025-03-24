@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.worldbuilder.debug.DebugInfo;
 import com.worldbuilder.SpriteLoader;
+import com.worldbuilder.debug.DebugInfo;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
@@ -43,11 +43,15 @@ public class RocksCanvas extends Canvas {
 
         private static record RocksPosition(int centerX, int centerY) {}
     
-        private static class RocksTile {
+        public static class RocksTile {
             final int rockType;
 
             RocksTile(int rockType) {
                 this.rockType = rockType;
+            }
+
+            public int getRockType() {
+                return rockType;
             }
         }
     
@@ -105,5 +109,9 @@ public class RocksCanvas extends Canvas {
 
     public void dispose() {
         animator.stop();
+    }
+
+    public RocksTile[][] getTileMap() {
+        return tileMap;
     }
 }

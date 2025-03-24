@@ -1,7 +1,7 @@
 package com.worldbuilder.Canvas;
 
-import com.worldbuilder.debug.DebugInfo;
 import com.worldbuilder.SpriteLoader;
+import com.worldbuilder.debug.DebugInfo;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -146,5 +146,9 @@ public abstract class GroundCanvas extends Canvas {
         if (x < tileMap.length-1 && tileMap[x+1][y] != null) drawTerrain(x+1, y, false);
         if (y > 0 && tileMap[x][y-1] != null) drawTerrain(x, y-1, false);
         if (y < tileMap[0].length-1 && tileMap[x][y+1] != null) drawTerrain(x, y+1, false);
+    }
+
+    public TerrainTile[][] getTileMap() {
+        return tileMap;
     }
 } 

@@ -2,6 +2,7 @@ plugins {
     application
     id("org.openjfx.javafxplugin") version "0.1.0"
     id("org.beryx.jlink") version "3.0.1"
+    
 }
 
 repositories { 
@@ -17,7 +18,7 @@ val javaFXVersion = "21.0.2"
 dependencies {
     implementation("com.google.guava:guava:32.0.1-jre")
     implementation("org.json:json:20250107")
-    
+    implementation("com.google.code.gson:gson:2.11.0")
     // JavaFX dependencies with explicit versions
     implementation("org.openjfx:javafx-controls:$javaFXVersion")
     implementation("org.openjfx:javafx-fxml:$javaFXVersion")
@@ -43,7 +44,7 @@ javafx {
 
 java {
     toolchain { 
-        languageVersion.set(JavaLanguageVersion.of(21))  // Using Java 21 LTS to match JavaFX version
+        languageVersion.set(JavaLanguageVersion.of(23))  // Match your installed Java version
     }
 }
 
@@ -64,26 +65,6 @@ tasks {
     
     withType<JavaExec> {
         standardInput = System.`in`
-        jvmArgs = listOf(
-            "--enable-preview",
-            "-Xms1g",  // Initial heap size
-            "-Xmx4g",  // Maximum heap size 
-            "-XX:+UseG1GC", // Use G1 garbage collector
-            "-XX:+UseStringDeduplication", // Optimize string usage
-            "-Dprism.order=d3d,metal,es2,sw", // Try hardware acceleration first
-            "-Dprism.forceGPU=true", // Force GPU usage
-            "-Dprism.text=t2k",
-            "-Djavafx.verbose=true",
-            "-Dprism.maxvram=4g", // Increased texture memory
-            "-Dprism.targetfps=60", // Target framerate
-            "-Djavafx.animation.pulse=60", // Animation pulse rate
-            "-Dprism.dirtyopts=false", // Disable dirty region optimizations
-            "-Dquantum.multithreaded=true" // Enable multithreaded rendering
-        )
-    }
-    
-    withType<JavaCompile> {
-        options.compilerArgs.add("--enable-preview")
     }
     
     processResources {
@@ -97,19 +78,6 @@ tasks {
 application { 
     mainClass.set("com.worldbuilder.App")
     applicationDefaultJvmArgs = listOf(
-        "--enable-preview",
-        "-Xms1g",  // Initial heap size
-        "-Xmx4g",  // Maximum heap size
-        "-XX:+UseG1GC", // Use G1 garbage collector
-        "-XX:+UseStringDeduplication", // Optimize string usage
-        "-Dprism.order=d3d,metal,es2,sw", // Try hardware acceleration first
-        "-Dprism.forceGPU=true", // Force GPU usage
-        "-Dprism.text=t2k",
-        "-Djavafx.verbose=true",
-        "-Dprism.maxvram=4g", // Increased texture memory
-        "-Dprism.targetfps=60", // Target framerate
-        "-Djavafx.animation.pulse=60", // Animation pulse rate
-        "-Dprism.dirtyopts=false", // Disable dirty region optimizations
-        "-Dquantum.multithreaded=true" // Enable multithreaded rendering
+        "-Xmx2g",
     )
 }

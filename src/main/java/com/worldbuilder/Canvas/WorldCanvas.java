@@ -1,25 +1,20 @@
 package com.worldbuilder.Canvas;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageOutputStream;
-
-import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.IOException;
-
+import com.google.gson.Gson;
 import com.worldbuilder.App;
 import com.worldbuilder.debug.DebugInfo;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 
 /**
  * WorldCanvas - A scrollable grid-based canvas for world building
@@ -43,9 +38,14 @@ public final class WorldCanvas extends ScrollPane {
     private final SandCanvas sandCanvas;
     private final FoamCanvas foamCanvas;
     private final ShadowCanvas shadowCanvas;
-
+    private final StairsCanvas stairsCanvas;
+    private final WallCanvas wallCanvas;
+    private final PlateauCanvas plateauCanvas;
+    private final BridgeCanvas bridgeCanvas;
+    private final BridgeShadowCanvas bridgeShadowCanvas;
     private final List<Canvas> canvasList = new ArrayList<>();
-
+    private final SandFillCanvas sandFillCanvas;
+    private final GrassFillCanvas grassFillCanvas;
     // Current tile position (mouse)
     private int currentTileX;
     private int currentTileY;
@@ -91,6 +91,28 @@ public final class WorldCanvas extends ScrollPane {
         shadowCanvas = new ShadowCanvas(width, height);
         canvasList.add(shadowCanvas);
 
+        stairsCanvas = new StairsCanvas(width, height);
+        canvasList.add(stairsCanvas);
+
+        wallCanvas = new WallCanvas(width, height);
+        canvasList.add(wallCanvas);
+
+        plateauCanvas = new PlateauCanvas(width, height);
+        canvasList.add(plateauCanvas);
+
+        sandFillCanvas = new SandFillCanvas(width, height);
+        canvasList.add(sandFillCanvas);
+
+        grassFillCanvas = new GrassFillCanvas(width, height);
+        canvasList.add(grassFillCanvas);
+
+        bridgeShadowCanvas = new BridgeShadowCanvas(width, height);
+        canvasList.add(bridgeShadowCanvas);
+
+        bridgeCanvas = new BridgeCanvas(width, height);
+        canvasList.add(bridgeCanvas);
+
+
         // Initialize hover canvas
         hoverCanvas = new Canvas(width, height);
         canvasList.add(hoverCanvas);
@@ -106,7 +128,7 @@ public final class WorldCanvas extends ScrollPane {
             canvas.setCacheHint(javafx.scene.CacheHint.SPEED);
             canvas.setMouseTransparent(true);
         }
-        
+
         gridCanvas.setMouseTransparent(false);
 
         // Add all canvases to the container
@@ -225,6 +247,29 @@ public final class WorldCanvas extends ScrollPane {
             case ROCKS -> {
                 rocksCanvas.drawRocks(currentTileX, currentTileY, App.getSidePanel().getSelectedRockType());
             }
+            case STAIRS -> {
+                stairsCanvas.drawStairs(currentTileX, currentTileY, true);
+            }
+            case DECO -> {
+            }
+            case WALL -> {
+                wallCanvas.drawWall(currentTileX, currentTileY, true);
+            }
+            case PLATEAU -> {
+                plateauCanvas.drawPlateau(currentTileX, currentTileY, true);
+            }
+            case BRIDGE -> {
+                bridgeCanvas.drawBridge(currentTileX, currentTileY, true);
+            }
+            case BRIDGESHADOW -> {
+                bridgeShadowCanvas.drawBridgeShadow(currentTileX, currentTileY);
+            }
+            case GRASSFILL -> {
+                grassFillCanvas.drawGrassFill(currentTileX, currentTileY);
+            }
+            case SANDFILL -> {
+                sandFillCanvas.drawSandFill(currentTileX, currentTileY);
+            }
             case null -> DebugInfo.setError("NO LAYER SELECTED");
             default -> DebugInfo.setError("NO LAYER SELECTED");
         }
@@ -250,6 +295,27 @@ public final class WorldCanvas extends ScrollPane {
             case ROCKS -> {
                 rocksCanvas.deleteRocks(currentTileX, currentTileY);
             }
+            case STAIRS -> {
+                stairsCanvas.deleteStairs(currentTileX, currentTileY);
+            }
+            case WALL -> {
+                wallCanvas.deleteWall(currentTileX, currentTileY);
+            }
+            case PLATEAU -> {
+                plateauCanvas.deletePlateau(currentTileX, currentTileY);
+            }
+            case BRIDGE -> {
+                bridgeCanvas.deleteBridge(currentTileX, currentTileY);
+            }
+            case BRIDGESHADOW -> {
+                bridgeShadowCanvas.deleteBridgeShadow(currentTileX, currentTileY);
+            }
+            case GRASSFILL -> {
+                grassFillCanvas.deleteGrassFill(currentTileX, currentTileY);
+            }
+            case SANDFILL -> {
+                sandFillCanvas.deleteSandFill(currentTileX, currentTileY);
+            }
             case null -> DebugInfo.setError("NO LAYER SELECTED");
             default -> DebugInfo.setError("NO LAYER SELECTED");
         }
@@ -274,11 +340,220 @@ public final class WorldCanvas extends ScrollPane {
     // ================== SAVE, LOAD, EXPORT, IMPORT ==================//
 
     public void export() {
-        // TODO: Implement export
+
+        int numberOfCanvases = canvasList.size();
+
+        String[][][] tileMap = new String[WORLD_WIDTH][WORLD_HEIGHT][numberOfCanvases - 2];
+
+        for (int i = 1; i < numberOfCanvases - 1; i++) {
+
+            Canvas canvas = canvasList.get(i);
+
+            for (int x = 0; x < WORLD_WIDTH; x++) {
+                for (int y = 0; y < WORLD_HEIGHT; y++) {
+                    switch (canvas.getClass().getSimpleName()) {
+                        case "GrassCanvas" -> {
+                            if (grassCanvas.getTileMap()[x][y] != null) {
+                                tileMap[x][y][i - 1] = "GRASS";
+                            }
+                        }
+                        case "WaterCanvas" -> {
+                            if (waterCanvas.getTileMap()[x][y]) {
+                                tileMap[x][y][i - 1] = "WATER";
+                            }
+                        }
+                        case "FoamCanvas" -> {
+                            if (foamCanvas.getTileMap()[x][y] != null) {
+                                tileMap[x][y][i - 1] = "FOAM";
+                            }
+                        }
+                        case "SandCanvas" -> {
+                            if (sandCanvas.getTileMap()[x][y] != null) {
+                                tileMap[x][y][i - 1] = "SAND";
+                            }
+                        }
+                        case "RocksCanvas" -> {
+                            if (rocksCanvas.getTileMap()[x][y] != null) {
+                                int rockType = rocksCanvas.getTileMap()[x][y].getRockType() + 1;
+                                tileMap[x][y][i - 1] = "ROCKS" + rockType;
+                            }
+                        }
+                        case "ShadowCanvas" -> {
+                            if (shadowCanvas.getTileMap()[x][y] != null) {
+                                tileMap[x][y][i - 1] = "SHADOW";
+                            }
+                        }
+                        case "WallCanvas" -> {
+                            if (wallCanvas.getTileMap()[x][y] != null) {
+                                tileMap[x][y][i - 1] = "WALL";
+                            }
+                        }
+                        case "PlateauCanvas" -> {
+                            if (plateauCanvas.getTileMap()[x][y] != null) {
+                                tileMap[x][y][i - 1] = "PLATEAU";
+                            }
+                        }
+                        case "StairsCanvas" -> {
+                            if (stairsCanvas.getTileMap()[x][y] != null) {
+                                tileMap[x][y][i - 1] = "STAIRS";
+                            }
+                        }
+                        case "BridgeCanvas" -> {
+                            if (bridgeCanvas.getTileMap()[x][y] != null) {
+                                tileMap[x][y][i - 1] = "BRIDGE";
+                            }
+                        }
+                        case "BridgeShadowCanvas" -> {
+                            if (bridgeShadowCanvas.getTileMap()[x][y]) {
+                                tileMap[x][y][i - 1] = "BRIDGESHADOW";
+                            }
+                        }
+                        case "SandFillCanvas" -> {
+                            if (sandFillCanvas.getTileMap()[x][y] != null) {
+                                tileMap[x][y][i - 1] = "SANDFILL";
+                            }
+                        }
+                        case "GrassFillCanvas" -> {
+                            if (grassFillCanvas.getTileMap()[x][y] != null) {
+                                tileMap[x][y][i - 1] = "GRASSFILL";
+                            }
+                        }
+                        default -> {
+                        }
+                    }
+                }
+            }
+        }
+        // convert tileMap to json
+        String json = new Gson().toJson(tileMap);
+        // save json to file
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save World");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("JSON Files", "*.json"));
+        java.io.File file = fileChooser.showSaveDialog(this.getScene().getWindow());
+        if (file != null) {
+            try {
+                java.io.FileWriter writer = new java.io.FileWriter(file);
+                writer.write(json);
+                writer.close();
+            } catch (Exception e) {
+                DebugInfo.setError("Failed to save world: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
     }
 
-    public void importfunc() {
-        // TODO: Implement import
+    public void importfunc() throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Import World");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("JSON Files", "*.json"));
+        java.io.File file = fileChooser.showOpenDialog(this.getScene().getWindow());
+        if (file != null) {
+            String json = new String(java.nio.file.Files.readAllBytes(file.toPath()));
+            String[][][] tileMap = new Gson().fromJson(json, String[][][].class);
+
+            int numberOfCanvases = tileMap[0][0].length;
+
+            // WalkableCanvas walkableCanvas0 = new WalkableCanvas(WORLD_WIDTH, WORLD_HEIGHT);
+            // WalkableCanvas walkableCanvas1 = new WalkableCanvas(WORLD_WIDTH, WORLD_HEIGHT);
+            // WalkableCanvas walkableCanvas2 = new WalkableCanvas(WORLD_WIDTH, WORLD_HEIGHT);
+            
+            // ArrayList<WalkableCanvas> walkableCanvases = new ArrayList<>();
+
+            // walkableCanvases.add(walkableCanvas0);
+            // walkableCanvases.add(walkableCanvas1);
+            // walkableCanvases.add(walkableCanvas2);
+
+            // String[][][] collisionMap
+
+            // PlayerCanvas playerCanvas0 = new PlayerCanvas(WORLD_WIDTH, WORLD_HEIGHT);
+            // PlayerCanvas playerCanvas1 = new PlayerCanvas(WORLD_WIDTH, WORLD_HEIGHT);   
+            // PlayerCanvas playerCanvas2 = new PlayerCanvas(WORLD_WIDTH, WORLD_HEIGHT);
+
+            // ArrayList<PlayerCanvas> playerCanvases = new ArrayList<>();
+
+            // playerCanvases.add(playerCanvas);
+            // playerCanvases.add(playerCanvas2);
+            // playerCanvases.add(playerCanvas3);
+
+            // if player with z-index 0 wants to move to walkablecanvas0 (z index 0)
+            //     Check if walkablecanvas0[player.x][player.y] is walkable -> collisionMap == walk
+            //
+            // if player wants to move up a z-layer -> check if [x+1][y][z+1] == "walk" and [x][y][z] == "stairs"
+
+            for (int i = 0; i < numberOfCanvases; i++) {
+                for (int x = 0; x < WORLD_WIDTH; x++) {
+                    for (int y = 0; y < WORLD_HEIGHT; y++) {
+                        String tile = tileMap[x][y][i];
+                        if (tile != null) {
+                            switch (tile) {
+                                case "GRASS" -> {
+                                    grassCanvas.drawGrass(x, y, true);
+                                    // collisionMap[x][y][0] = "walk";
+                                    break;
+                                }
+                                case "WATER" -> {
+                                    waterCanvas.drawWater(x, y);
+                                    // collisionMap[x][y][0] = "blocked";
+                                    break;
+                                }
+                                case "FOAM" -> {
+                                    foamCanvas.drawFoam(x, y);
+                                    // collisionMap[x][y][0] = "blocked";
+                                    break;
+                                }
+                                case "SAND" -> {
+                                    sandCanvas.drawSand(x, y, true);
+                                    // collisionMap[x][y][0] = "walk";
+                                    break;
+                                }
+                                case "ROCKS" -> {
+                                    rocksCanvas.drawRocks(x, y, Integer.parseInt(tile.substring(6)));
+                                    // collisionMap[x][y][0] = "blocked";
+                                    break;
+                                    }
+                                case "SHADOW" -> {
+                                    shadowCanvas.drawShadow(x, y);
+                                    break;
+                                }
+                                case "WALL" -> {
+                                    wallCanvas.drawWall(x, y, true);
+                                    break;
+                                }
+                                case "PLATEAU" -> {
+                                    plateauCanvas.drawPlateau(x, y, true);
+                                    break;
+                                }
+                                case "STAIRS" -> {
+                                    stairsCanvas.drawStairs(x, y, true);
+                                    break;
+                                }
+                                case "BRIDGE" -> {
+                                    bridgeCanvas.drawBridge(x, y, true);
+                                    break;
+                                }
+                                case "BRIDGESHADOW" -> {
+                                    bridgeShadowCanvas.drawBridgeShadow(x, y);
+                                    break;
+                                }
+                                case "GRASSFILL" -> {
+                                    grassFillCanvas.drawGrassFill(x, y);
+                                    break;
+                                }
+                                case "SANDFILL" -> {
+                                    sandFillCanvas.drawSandFill(x, y);
+                                    break;
+                                }
+                                default -> {
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void save() {
@@ -288,8 +563,6 @@ public final class WorldCanvas extends ScrollPane {
     public void load() {
         // TODO: Implement load
     }
-    
-    
 
     // ================== GETTERS ==================//
 

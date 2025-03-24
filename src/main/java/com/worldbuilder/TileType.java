@@ -10,8 +10,9 @@ public enum TileType {
     STAIRS,
     PLATEAU,
     WALL,
-    FILL,
+    GRASSFILL,
+    SANDFILL,
     BRIDGE,
     BRIDGE_SHADOW,
-    DECO,
+    DECO, BRIDGESHADOW,
 }

@@ -3,8 +3,8 @@ package com.worldbuilder.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.worldbuilder.debug.DebugInfo;
 import com.worldbuilder.SpriteLoader;
+import com.worldbuilder.debug.DebugInfo;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -60,7 +60,7 @@ public class TypesPanel extends VBox {
         titleLabel.setText(typeName + " Types");
         getChildren().add(titleLabel);
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             final int typeIndex = i;
             Button button = new Button(typeName + " TYPE " + (typeIndex + 1));
             buttons.add(button);

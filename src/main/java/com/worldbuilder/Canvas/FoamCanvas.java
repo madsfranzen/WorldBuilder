@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.worldbuilder.debug.DebugInfo;
 import com.worldbuilder.SpriteLoader;
+import com.worldbuilder.debug.DebugInfo;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
@@ -116,5 +116,9 @@ public class FoamCanvas extends Canvas {
     public void dispose() {
         animator.stop();
         activeFoams.clear();
+    }
+
+    public FoamTile[][] getTileMap() {
+        return tileMap;
     }
 }
