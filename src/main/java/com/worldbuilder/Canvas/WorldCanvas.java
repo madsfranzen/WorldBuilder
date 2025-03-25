@@ -536,9 +536,17 @@ public final class WorldCanvas extends ScrollPane {
                                 case "SAND" -> {
                                     sandCanvas.drawSand(x, y, true);
                                 }
-                                case "ROCKS" -> {
-                                    rocksCanvas.drawRocks(x, y, Integer.parseInt(tile.substring(6)));
-                                    System.out.println("ROCKS" + tile.substring(6));
+                                case "ROCKS1" -> {
+                                    rocksCanvas.drawRocks(x, y, 1);
+                                }
+                                case "ROCKS2" -> {
+                                    rocksCanvas.drawRocks(x, y, 2);
+                                }
+                                case "ROCKS3" -> {
+                                    rocksCanvas.drawRocks(x, y, 3);
+                                }
+                                case "ROCKS4" -> {
+                                    rocksCanvas.drawRocks(x, y, 4);
                                 }
                                 case "SHADOW" -> {
                                     shadowCanvas.drawShadow(x, y);
