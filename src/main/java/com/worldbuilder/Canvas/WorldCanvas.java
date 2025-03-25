@@ -360,13 +360,13 @@ public final class WorldCanvas extends ScrollPane {
                         case "GrassCanvas" -> {
                             if (grassCanvas.getTileMap()[x][y] != null) {
                                 tileMap[x][y][i - 1] = "GRASS";
-                                collisionMap[x][y][i - 1] = "GRASS";
+                                collisionMap[x][y][0] = "GRASS";
                             }
                         }
                         case "WaterCanvas" -> {
                             if (waterCanvas.getTileMap()[x][y]) {
                                 tileMap[x][y][i - 1] = "WATER";
-                                collisionMap[x][y][i - 1] = "WATER";
+                                collisionMap[x][y][0] = "WATER";
                             }
                         }
                         case "FoamCanvas" -> {
@@ -377,7 +377,7 @@ public final class WorldCanvas extends ScrollPane {
                         case "SandCanvas" -> {
                             if (sandCanvas.getTileMap()[x][y] != null) {
                                 tileMap[x][y][i - 1] = "SAND";
-                                collisionMap[x][y][i - 1] = "SAND";
+                                collisionMap[x][y][0] = "SAND";
                             }
                         }
                         case "RocksCanvas" -> {
@@ -394,25 +394,25 @@ public final class WorldCanvas extends ScrollPane {
                         case "WallCanvas" -> {
                             if (wallCanvas.getTileMap()[x][y] != null) {
                                 tileMap[x][y][i - 1] = "WALL";
-                                collisionMap[x][y][i - 1] = "WALL";
+                                collisionMap[x][y][0] = "WALL";
                             }
                         }
                         case "PlateauCanvas" -> {
                             if (plateauCanvas.getTileMap()[x][y] != null) {
                                 tileMap[x][y][i - 1] = "PLATEAU";
-                                collisionMap[x][y][i] = "PLATEAU";
+                                collisionMap[x][y][1] = "PLATEAU";
                             }
                         }
                         case "StairsCanvas" -> {
                             if (stairsCanvas.getTileMap()[x][y] != null) {
                                 tileMap[x][y][i - 1] = "STAIRS";
-                                collisionMap[x][y][i - 1] = "STAIRS";
+                                collisionMap[x][y][0] = "STAIRS";
                             }
                         }
                         case "BridgeCanvas" -> {
                             if (bridgeCanvas.getTileMap()[x][y] != null) {
                                 tileMap[x][y][i - 1] = "BRIDGE";
-                                collisionMap[x][y][i] = "BRIDGE";
+                                collisionMap[x][y][1] = "BRIDGE";
                             }
                         }
                         case "BridgeShadowCanvas" -> {
