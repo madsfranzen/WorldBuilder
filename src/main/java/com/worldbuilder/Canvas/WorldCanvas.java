@@ -401,6 +401,7 @@ public final class WorldCanvas extends ScrollPane {
                             if (plateauCanvas.getTileMap()[x][y] != null) {
                                 tileMap[x][y][i - 1] = "PLATEAU";
                                 collisionMap[x][y][1] = "PLATEAU";
+                                collisionMap[x][y][0] = null;
                             }
                         }
                         case "StairsCanvas" -> {
@@ -537,16 +538,16 @@ public final class WorldCanvas extends ScrollPane {
                                     sandCanvas.drawSand(x, y, true);
                                 }
                                 case "ROCKS1" -> {
-                                    rocksCanvas.drawRocks(x, y, 1);
+                                    rocksCanvas.drawRocks(x, y, 0);
                                 }
                                 case "ROCKS2" -> {
-                                    rocksCanvas.drawRocks(x, y, 2);
+                                    rocksCanvas.drawRocks(x, y, 1);
                                 }
                                 case "ROCKS3" -> {
-                                    rocksCanvas.drawRocks(x, y, 3);
+                                     rocksCanvas.drawRocks(x, y, 2);
                                 }
                                 case "ROCKS4" -> {
-                                    rocksCanvas.drawRocks(x, y, 4);
+                                    rocksCanvas.drawRocks(x, y, 3);
                                 }
                                 case "SHADOW" -> {
                                     shadowCanvas.drawShadow(x, y);
