@@ -1,5 +1,6 @@
 package com.worldbuilder;
 
+import com.worldbuilder.Canvas.WaterCanvas;
 import com.worldbuilder.Canvas.WorldCanvas;
 import com.worldbuilder.debug.DebugInfo;
 import com.worldbuilder.ui.SidePanel;
@@ -7,6 +8,7 @@ import com.worldbuilder.ui.SidePanel;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -66,6 +68,12 @@ public class App extends Application {
         primaryStage.setTitle("WorldBuilder 2.0");
 
         primaryStage.show();
+
+        scene.addEventFilter(KeyEvent.KEY_RELEASED, event -> {
+            switch (event.getCode()) {
+                case B -> getWorldCanvas().fillCanvas();
+            }
+        });
     }
 
     public static SidePanel getSidePanel() {

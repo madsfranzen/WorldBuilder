@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.worldbuilder.App;
+import com.worldbuilder.TileType;
 import com.worldbuilder.debug.DebugInfo;
 
 import javafx.scene.canvas.Canvas;
@@ -341,6 +342,27 @@ public final class WorldCanvas extends ScrollPane {
                 gc.strokeLine(0, y * TILE_SIZE, gridCanvas.getWidth(), y * TILE_SIZE);
             }
         }
+
+    /**
+     * Fills up canvas with water.
+     */
+    public void fillCanvas() {
+        // Gets the current tileType
+        TileType tileType = App.getSidePanel().getSelectedLayer();
+
+        if (tileType != null) {
+            // Runs through every tile in the map and paints it
+            for (int i = 0; i < canvasList.size(); i++) {
+                for (int x = 0; x < WORLD_WIDTH; x++) {
+                    for (int y = 0; y < WORLD_HEIGHT; y++) {
+                        switch (tileType) {
+                            case WATER -> waterCanvas.drawWater(x, y);
+                        }
+                    }
+                }
+            }
+        }
+    }
     
         // ================== SAVE, LOAD, EXPORT, IMPORT ==================//
     
@@ -348,95 +370,95 @@ public final class WorldCanvas extends ScrollPane {
             int numberOfCanvases = canvasList.size();
             collisionMap = new String[WORLD_WIDTH][WORLD_HEIGHT][2 + elevationCanvasList.size()];
 
-        String[][][] tileMap = new String[WORLD_WIDTH][WORLD_HEIGHT][numberOfCanvases - 2];
+            String[][][] tileMap = new String[WORLD_WIDTH][WORLD_HEIGHT][numberOfCanvases - 2];
 
-        for (int i = 1; i < numberOfCanvases - 1; i++) {
+            for (int i = 1; i < numberOfCanvases - 1; i++) {
 
-            Canvas canvas = canvasList.get(i);
+                Canvas canvas = canvasList.get(i);
 
-            for (int x = 0; x < WORLD_WIDTH; x++) {
-                for (int y = 0; y < WORLD_HEIGHT; y++) {
-                    switch (canvas.getClass().getSimpleName()) {
-                        case "GrassCanvas" -> {
-                            if (grassCanvas.getTileMap()[x][y] != null) {
-                                tileMap[x][y][i - 1] = "GRASS";
-                                collisionMap[x][y][0] = "GRASS";
+                for (int x = 0; x < WORLD_WIDTH; x++) {
+                    for (int y = 0; y < WORLD_HEIGHT; y++) {
+                        switch (canvas.getClass().getSimpleName()) {
+                            case "GrassCanvas" -> {
+                                if (grassCanvas.getTileMap()[x][y] != null) {
+                                    tileMap[x][y][i - 1] = "GRASS";
+                                    collisionMap[x][y][0] = "GRASS";
+                                }
                             }
-                        }
-                        case "WaterCanvas" -> {
-                            if (waterCanvas.getTileMap()[x][y]) {
-                                tileMap[x][y][i - 1] = "WATER";
-                                collisionMap[x][y][0] = "WATER";
+                            case "WaterCanvas" -> {
+                                if (waterCanvas.getTileMap()[x][y]) {
+                                    tileMap[x][y][i - 1] = "WATER";
+                                    collisionMap[x][y][0] = "WATER";
+                                }
                             }
-                        }
-                        case "FoamCanvas" -> {
-                            if (foamCanvas.getTileMap()[x][y] != null) {
-                                tileMap[x][y][i - 1] = "FOAM";
+                            case "FoamCanvas" -> {
+                                if (foamCanvas.getTileMap()[x][y] != null) {
+                                    tileMap[x][y][i - 1] = "FOAM";
+                                }
                             }
-                        }
-                        case "SandCanvas" -> {
-                            if (sandCanvas.getTileMap()[x][y] != null) {
-                                tileMap[x][y][i - 1] = "SAND";
-                                collisionMap[x][y][0] = "SAND";
+                            case "SandCanvas" -> {
+                                if (sandCanvas.getTileMap()[x][y] != null) {
+                                    tileMap[x][y][i - 1] = "SAND";
+                                    collisionMap[x][y][0] = "SAND";
+                                }
                             }
-                        }
-                        case "RocksCanvas" -> {
-                            if (rocksCanvas.getTileMap()[x][y] != null) {
-                                int rockType = rocksCanvas.getTileMap()[x][y].getRockType() + 1;
-                                tileMap[x][y][i - 1] = "ROCKS" + rockType;
+                            case "RocksCanvas" -> {
+                                if (rocksCanvas.getTileMap()[x][y] != null) {
+                                    int rockType = rocksCanvas.getTileMap()[x][y].getRockType() + 1;
+                                    tileMap[x][y][i - 1] = "ROCKS" + rockType;
+                                }
                             }
-                        }
-                        case "ShadowCanvas" -> {
-                            if (shadowCanvas.getTileMap()[x][y] != null) {
-                                tileMap[x][y][i - 1] = "SHADOW";
+                            case "ShadowCanvas" -> {
+                                if (shadowCanvas.getTileMap()[x][y] != null) {
+                                    tileMap[x][y][i - 1] = "SHADOW";
+                                }
                             }
-                        }
-                        case "WallCanvas" -> {
-                            if (wallCanvas.getTileMap()[x][y] != null) {
-                                tileMap[x][y][i - 1] = "WALL";
-                                collisionMap[x][y][0] = "WALL";
+                            case "WallCanvas" -> {
+                                if (wallCanvas.getTileMap()[x][y] != null) {
+                                    tileMap[x][y][i - 1] = "WALL";
+                                    collisionMap[x][y][0] = "WALL";
+                                }
                             }
-                        }
-                        case "PlateauCanvas" -> {
-                            if (plateauCanvas.getTileMap()[x][y] != null) {
-                                tileMap[x][y][i - 1] = "PLATEAU";
-                                collisionMap[x][y][1] = "PLATEAU";
-                                collisionMap[x][y][0] = null;
+                            case "PlateauCanvas" -> {
+                                if (plateauCanvas.getTileMap()[x][y] != null) {
+                                    tileMap[x][y][i - 1] = "PLATEAU";
+                                    collisionMap[x][y][1] = "PLATEAU";
+                                    collisionMap[x][y][0] = null;
+                                }
                             }
-                        }
-                        case "StairsCanvas" -> {
-                            if (stairsCanvas.getTileMap()[x][y] != null) {
-                                tileMap[x][y][i - 1] = "STAIRS";
-                                collisionMap[x][y][0] = "STAIRS";
+                            case "StairsCanvas" -> {
+                                if (stairsCanvas.getTileMap()[x][y] != null) {
+                                    tileMap[x][y][i - 1] = "STAIRS";
+                                    collisionMap[x][y][0] = "STAIRS";
+                                }
                             }
-                        }
-                        case "BridgeCanvas" -> {
-                            if (bridgeCanvas.getTileMap()[x][y] != null) {
-                                tileMap[x][y][i - 1] = "BRIDGE";
-                                collisionMap[x][y][1] = "BRIDGE";
+                            case "BridgeCanvas" -> {
+                                if (bridgeCanvas.getTileMap()[x][y] != null) {
+                                    tileMap[x][y][i - 1] = "BRIDGE";
+                                    collisionMap[x][y][1] = "BRIDGE";
+                                }
                             }
-                        }
-                        case "BridgeShadowCanvas" -> {
-                            if (bridgeShadowCanvas.getTileMap()[x][y]) {
-                                tileMap[x][y][i - 1] = "BRIDGESHADOW";
+                            case "BridgeShadowCanvas" -> {
+                                if (bridgeShadowCanvas.getTileMap()[x][y]) {
+                                    tileMap[x][y][i - 1] = "BRIDGESHADOW";
+                                }
                             }
-                        }
-                        case "SandFillCanvas" -> {
-                            if (sandFillCanvas.getTileMap()[x][y] != null) {
-                                tileMap[x][y][i - 1] = "SANDFILL";
+                            case "SandFillCanvas" -> {
+                                if (sandFillCanvas.getTileMap()[x][y] != null) {
+                                    tileMap[x][y][i - 1] = "SANDFILL";
+                                }
                             }
-                        }
-                        case "GrassFillCanvas" -> {
-                            if (grassFillCanvas.getTileMap()[x][y] != null) {
-                                tileMap[x][y][i - 1] = "GRASSFILL";
+                            case "GrassFillCanvas" -> {
+                                if (grassFillCanvas.getTileMap()[x][y] != null) {
+                                    tileMap[x][y][i - 1] = "GRASSFILL";
+                                }
                             }
-                        }
-                        default -> {
+                            default -> {
+                            }
                         }
                     }
                 }
             }
-        }
         // convert tileMap to json
         String json = new Gson().toJson(tileMap);
         // save json to file
