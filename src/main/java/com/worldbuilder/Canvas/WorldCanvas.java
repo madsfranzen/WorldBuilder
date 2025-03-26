@@ -357,6 +357,8 @@ public final class WorldCanvas extends ScrollPane {
                     for (int y = 0; y < WORLD_HEIGHT; y++) {
                         switch (tileType) {
                             case WATER -> waterCanvas.drawWater(x, y);
+                            //case SAND -> sandCanvas.drawSand(x, y, false);
+                            //case GRASS -> grassCanvas.drawGrass(x, y, false);
                         }
                     }
                 }
